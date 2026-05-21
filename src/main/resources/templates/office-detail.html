@@ -33,23 +33,23 @@
   </div>
 
   <!-- Update Phone -->
-  <div class="quick-strip">
-    <div class="quick-lbl">Update Phone — PUT /api/v1/offices/<span th:text="${office.officeCode}"></span>/phone/{phone}</div>
-    <form th:action="@{/offices/{code}/phone(code=${office.officeCode})}" method="post"
-          style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
-      <div class="f-field" style="min-width:240px">
-        <label class="f-lbl">New Phone Number</label>
-        <input class="f-input" name="phone" th:value="${office.phone}" placeholder="+1 650 000 0000"/>
-      </div>
-      <button type="submit" class="btn btn-ok">Update Phone</button>
-    </form>
-  </div>
+<!--  <div class="quick-strip">-->
+<!--    <div class="quick-lbl">Update Phone — PUT /api/v1/offices/<span th:text="${office.officeCode}"></span>/phone/{phone}</div>-->
+<!--    <form th:action="@{/offices/{code}/phone(code=${office.officeCode})}" method="post"-->
+<!--          style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">-->
+<!--      <div class="f-field" style="min-width:240px">-->
+<!--        <label class="f-lbl">New Phone Number</label>-->
+<!--        <input class="f-input" name="phone" th:value="${office.phone}" placeholder="+1 650 000 0000"/>-->
+<!--      </div>-->
+<!--      <button type="submit" class="btn btn-ok">Update Phone</button>-->
+<!--    </form>-->
+<!--  </div>-->
 
   <!-- Employees in this office -->
   <div class="slbl" style="margin-top:20px">Employees in this office</div>
   <div class="table-wrap">
     <table class="wf-table">
-      <thead><tr><th>#</th><th>Name</th><th>Title</th><th>Email</th><th>Actions</th></tr></thead>
+      <thead><tr><th>#</th><th>Name</th><th>Title</th><th>Actions</th></tr></thead>
       <tbody>
         <tr th:if="${employees == null or employees.isEmpty()}">
           <td colspan="5" style="text-align:center;padding:16px;color:#888">No employees found.</td>
@@ -58,7 +58,6 @@
           <td th:text="${e.employeeNumber}"></td>
           <td th:text="${e.fullName}"></td>
           <td th:text="${e.jobTitle}"></td>
-          <td th:text="${e.email}"></td>
           <td><a th:href="@{/employees/{no}(no=${e.employeeNumber})}" class="btn btn-sm">View</a></td>
         </tr>
       </tbody>

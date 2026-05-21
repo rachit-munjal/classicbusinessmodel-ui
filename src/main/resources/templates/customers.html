@@ -35,15 +35,15 @@
       <div class="stat-lbl">Total</div>
       <div class="stat-val" th:text="${stats['totalCustomers'] ?: customers.totalElements}">122</div>
     </div>
-    <div class="stat-box">
-      <div class="stat-lbl">Countries</div>
-      <div class="stat-val" th:text="${stats['totalCountries'] ?: 0}">27</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-lbl">Avg Credit</div>
-      <div class="stat-val stat-val-sm"
-           th:text="${stats['avgCreditLimit'] != null ? '$' + #numbers.formatDecimal(stats['avgCreditLimit'], 0, 'COMMA', 0, 'POINT') : '—'}">—</div>
-    </div>
+<!--    <div class="stat-box">-->
+<!--      <div class="stat-lbl">Countries</div>-->
+<!--      <div class="stat-val" th:text="${stats['totalCountries'] ?: 0}">27</div>-->
+<!--    </div>-->
+<!--    <div class="stat-box">-->
+<!--      <div class="stat-lbl">Avg Credit</div>-->
+<!--      <div class="stat-val stat-val-sm"-->
+<!--           th:text="${stats['avgCreditLimit'] != null ? '$' + #numbers.formatDecimal(stats['avgCreditLimit'], 0, 'COMMA', 0, 'POINT') : '—'}">—</div>-->
+<!--    </div>-->
   </div>
 
   <form method="get" action="/customers" class="search-row">

@@ -41,7 +41,7 @@
 
   <form method="get" action="/employees" class="search-row">
     <input id="employee-search" type="text" name="search"
-           class="f-input" placeholder="Search name, city…"
+           class="f-input" placeholder="Search name"
            th:value="${search}" style="max-width:240px"/>
     <select id="employee-office-filter" name="office" class="f-select" style="min-width:140px">
       <option value="" th:selected="${selectedOffice == ''}">All Offices</option>
