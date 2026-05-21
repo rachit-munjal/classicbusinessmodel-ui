@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Offices')}"><title>Offices</title></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: topnav('offices')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Offices')}"></div>
+
+<div class="page-content">
+
+  <div class="pg-header">
+    <div class="pg-header-icon">🏢</div>
+    <div><div class="pg-header-title">Offices</div></div>
+<!--    <div class="pg-header-badge">M7 — Surajit</div>-->
+  </div>
+
+<!--  <div class="ep-strip">-->
+<!--    <span class="ep ep-get">GET /api/v1/offices/all</span>-->
+<!--    <span class="ep ep-get">GET /api/v1/offices/stats</span>-->
+<!--    <span class="ep ep-get">GET /api/v1/offices/{code}/employees</span>-->
+<!--    <span class="ep ep-put">PUT /api/v1/offices/{code}/phone/{phone}</span>-->
+<!--  </div>-->
+
+  <div class="pg-topbar">
+    <span class="pg-topbar-title">All Offices</span>
+    <div class="pg-topbar-actions">
+      <a href="/" class="btn btn-sm">← Dashboard</a>
+      <a href="/offices/add" class="btn btn-dark">+ Add Office</a>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-lbl">Total Offices</div>
+      <div class="stat-val" th:text="${stats['totalOffices'] ?: offices.size()}">7</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-lbl">Total Employees</div>
+      <div class="stat-val" th:text="${stats['totalEmployees'] ?: 0}">23</div>
+    </div>
+  </div>
+
+  <div th:if="${offices == null or offices.isEmpty()}" class="empty-state">
+    <div class="empty-icon">🏢</div>
+    <div>No offices found. Make sure the backend is running.</div>
+  </div>
+
+  <div th:unless="${offices == null or offices.isEmpty()}" class="offices-grid">
+    <div th:each="o : ${offices}" class="office-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div class="office-city" th:text="${o.city}">San Francisco</div>
+        <span class="office-territory" th:text="${o.territory}">NA</span>
+      </div>
+      <div class="office-country" th:text="${o.country}">USA</div>
+      <div class="office-detail">
+        <span class="office-detail-lbl">CODE</span>
+        <span th:text="${o.officeCode}">1</span>
+      </div>
+      <div class="office-detail">
+        <span class="office-detail-lbl">PHONE</span>
+        <span th:text="${o.phone}">+1 650 219 4782</span>
+      </div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #ccc;display:flex;gap:6px">
+        <a th:href="@{/offices/{code}(code=${o.officeCode})}" class="btn btn-sm">View</a>
+        <a th:href="@{/offices/{code}(code=${o.officeCode})}" class="btn btn-warn btn-sm">Edit Phone</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

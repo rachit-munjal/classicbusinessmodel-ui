@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Office Detail')}"><title>Office Detail</title></head>
+<body>
+<nav th:replace="~{fragments/layout :: topnav('offices')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Offices / Detail')}"></div>
+
+<div class="page-content" th:data-flash="${flash}" th:data-flash-type="${flashType}">
+  <div class="pg-header">
+    <div class="pg-header-icon">🏢</div>
+    <div>
+      <div class="pg-header-title" th:text="${office.city + ' Office'}">Office</div>
+      <div class="pg-header-sub" th:text="${office.officeCode}"></div>
+    </div>
+<!--    <div class="pg-header-badge">M7</div>-->
+  </div>
+
+  <div class="pg-topbar">
+    <span class="pg-topbar-title" th:text="${office.country}"></span>
+    <div class="pg-topbar-actions">
+      <a href="/offices" class="btn btn-sm">← Back to Offices</a>
+    </div>
+  </div>
+
+  <!-- Detail grid -->
+  <div class="detail-grid">
+    <div class="d-field"><div class="d-lbl">Office Code</div><div class="d-val" th:text="${office.officeCode}"></div></div>
+    <div class="d-field"><div class="d-lbl">City</div><div class="d-val" th:text="${office.city}"></div></div>
+    <div class="d-field"><div class="d-lbl">Country</div><div class="d-val" th:text="${office.country}"></div></div>
+    <div class="d-field"><div class="d-lbl">Phone</div><div class="d-val" th:text="${office.phone}"></div></div>
+    <div class="d-field"><div class="d-lbl">Address</div><div class="d-val" th:text="${office.addressLine1}"></div></div>
+    <div class="d-field"><div class="d-lbl">Territory</div><div class="d-val" th:text="${office.territory}"></div></div>
+  </div>
+
+  <!-- Update Phone -->
+  <div class="quick-strip">
+    <div class="quick-lbl">Update Phone — PUT /api/v1/offices/<span th:text="${office.officeCode}"></span>/phone/{phone}</div>
+    <form th:action="@{/offices/{code}/phone(code=${office.officeCode})}" method="post"
+          style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+      <div class="f-field" style="min-width:240px">
+        <label class="f-lbl">New Phone Number</label>
+        <input class="f-input" name="phone" th:value="${office.phone}" placeholder="+1 650 000 0000"/>
+      </div>
+      <button type="submit" class="btn btn-ok">Update Phone</button>
+    </form>
+  </div>
+
+  <!-- Employees in this office -->
+  <div class="slbl" style="margin-top:20px">Employees in this office</div>
+  <div class="table-wrap">
+    <table class="wf-table">
+      <thead><tr><th>#</th><th>Name</th><th>Title</th><th>Email</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr th:if="${employees == null or employees.isEmpty()}">
+          <td colspan="5" style="text-align:center;padding:16px;color:#888">No employees found.</td>
+        </tr>
+        <tr th:each="e : ${employees}">
+          <td th:text="${e.employeeNumber}"></td>
+          <td th:text="${e.fullName}"></td>
+          <td th:text="${e.jobTitle}"></td>
+          <td th:text="${e.email}"></td>
+          <td><a th:href="@{/employees/{no}(no=${e.employeeNumber})}" class="btn btn-sm">View</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>
