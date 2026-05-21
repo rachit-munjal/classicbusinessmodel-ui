@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Edit Customer')}"><title>Edit Customer</title></head>
+<body>
+<nav th:replace="~{fragments/layout :: topnav('customers')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Customers / Edit')}"></div>
+
+<div class="page-content">
+  <div class="pg-header">
+<!--    <div class="pg-header-icon">✏</div>-->
+    <div>
+      <div class="pg-header-title">Edit Customer</div>
+<!--      <div class="pg-header-sub">PUT /api/v1/customers/update/<span th:text="${cust.customerNumber}"></span></div>-->
+    </div>
+<!--    <div class="pg-header-badge">M3</div>-->
+  </div>
+  <a th:href="@{/customers/{no}(no=${cust.customerNumber})}" class="back-link">← Back to Detail</a>
+
+  <div class="card">
+    <form th:action="@{/customers/{no}/edit(no=${cust.customerNumber})}" method="post" class="wf-form">
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Customer Name</label>
+          <input class="f-input" name="customerName" th:value="${cust.customerName}"/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Phone</label>
+          <input class="f-input" name="phone" th:value="${cust.phone}"/>
+        </div>
+      </div>
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Contact First</label>
+          <input class="f-input" name="contactFirstName" th:value="${cust.contactFirstName}"/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Contact Last</label>
+          <input class="f-input" name="contactLastName" th:value="${cust.contactLastName}"/>
+        </div>
+      </div>
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Address</label>
+          <input class="f-input" name="addressLine1" th:value="${cust.addressLine1}"/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">City</label>
+          <input class="f-input" name="city" th:value="${cust.city}"/>
+        </div>
+      </div>
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Country</label>
+          <input class="f-input" name="country" th:value="${cust.country}"/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Credit Limit</label>
+          <input class="f-input" name="creditLimit" type="number" step="0.01" th:value="${cust.creditLimit}"/>
+        </div>
+      </div>
+      <div class="f-actions">
+        <button type="submit" class="btn btn-dark">Update Customer</button>
+        <a th:href="@{/customers/{no}(no=${cust.customerNumber})}" class="btn">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>
