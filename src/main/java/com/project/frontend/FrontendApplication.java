@@ -1,13 +1,13 @@
-package com.project.cmb;
+package com.project.frontend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CmbApplication {
+public class FrontendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CmbApplication.class, args);
+		SpringApplication.run(FrontendApplication.class, args);
 	}
 
 }
