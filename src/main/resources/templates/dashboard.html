@@ -1,0 +1,131 @@
+
+
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Dashboard')}"><title>Dashboard</title></head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<body>
+
+<nav th:replace="~{fragments/layout :: topnav('dashboard')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Dashboard')}"></div>
+
+<div class="page-content">
+
+  <div class="pg-header">
+    <!--    <div class="pg-header-icon">📊</div>-->
+    <div><div class="pg-header-title">Dashboard</div></div>
+    <!--    <div class="pg-header-badge">M1</div>-->
+  </div>
+
+  <div class="pg-topbar">
+    <span class="pg-topbar-title">Welcome</span>
+  </div>
+
+  <!-- Stats row -->
+  <div class="stat-row">
+    <a href="/employees" style="text-decoration:none">
+      <div class="stat-box clickable">
+        <div class="stat-lbl">Employees</div>
+        <div class="stat-val" th:text="${stats['totalEmployees'] ?: 23}">23</div>
+        <div class="stat-hint">click to view →</div>
+      </div>
+    </a>
+    <a href="/customers" style="text-decoration:none">
+      <div class="stat-box clickable">
+        <div class="stat-lbl">Customers</div>
+        <div class="stat-val" th:text="${stats['totalCustomers'] ?: 122}">122</div>
+        <div class="stat-hint">click to view →</div>
+      </div>
+    </a>
+    <a href="/orders" style="text-decoration:none">
+      <div class="stat-box clickable">
+        <div class="stat-lbl">Orders</div>
+        <div class="stat-val" th:text="${stats['totalOrders'] ?: 326}">326</div>
+        <div class="stat-hint">click to view →</div>
+      </div>
+    </a>
+    <a href="/products" style="text-decoration:none">
+      <div class="stat-box clickable">
+        <div class="stat-lbl">Products</div>
+        <div class="stat-val" th:text="${stats['totalProducts'] ?: 110}">110</div>
+        <div class="stat-hint">click to view →</div>
+      </div>
+    </a>
+    <div class="stat-box">
+      <div class="stat-lbl">Total Sales</div>
+      <div class="stat-val stat-val-sm"
+           th:text="${stats['totalSalesAmount'] != null ? '$' + #numbers.formatDecimal(stats['totalSalesAmount'], 0, 'COMMA', 0, 'POINT') : '-'}">—</div>
+    </div>
+    <a href="/payments" style="text-decoration:none">
+      <div class="stat-box clickable">
+        <div class="stat-lbl">Payments</div>
+        <div class="stat-val" th:text="${stats['totalPayments'] ?: 273}">273</div>
+        <div class="stat-hint">click to view →</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Chart placeholder -->
+  <div class="slbl">Orders per month</div>
+  <div class="chart-wrap" style="height:280px">
+    <canvas id="ordersChart" class="chart-canvas"></canvas>
+  </div>
+
+  <!-- Quick actions -->
+  <div class="slbl" style="margin-top:18px">Quick actions</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a href="/employees" class="btn btn-dark">👥 All Employees</a>
+    <a href="/orders"    class="btn btn-dark">📦 All Orders</a>
+    <a href="/customers" class="btn btn-dark">+ Add Customer</a>
+    <a href="/products"  class="btn btn-dark">+ Add Product</a>
+    <a href="/payments"  class="btn btn-dark">💳 Payments</a>
+    <a href="/offices"   class="btn btn-dark">🏢 Offices</a>
+  </div>
+
+  <!-- Recent orders -->
+  <div class="slbl" style="margin-top:18px">Recent orders</div>
+  <div class="table-wrap">
+    <table class="wf-table">
+      <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Customer</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Value</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:if="${recentOrders == null or recentOrders.isEmpty()}">
+        <td colspan="5" style="text-align:center;color:#888;padding:16px">No recent orders available.</td>
+      </tr>
+      <tr th:each="o : ${recentOrders}">
+        <td th:text="${o.orderNumber}">10100</td>
+        <td th:text="${o.customer?.customerName ?: '-'}">Atelier Graphique</td>
+        <td th:text="${o.orderDate}">2003-01-06</td>
+        <td>
+            <span th:text="${o.status}"
+                  th:class="${o.status == 'Shipped'} ? 'badge b-green' :
+                             (${o.status == 'In Process'} ? 'badge b-orange' :
+                             (${o.status == 'Cancelled'} ? 'badge b-red' : 'badge b-gray'))">Shipped</span>
+        </td>
+        <td th:text="${o.orderTotal != null ? '$' + #numbers.formatDecimal(o.orderTotal, 0, 'COMMA', 2, 'POINT') : '-'}">—</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script th:inline="javascript">
+  const chartMonths = [[${chartMonths}]];
+  const chartCounts = [[${chartCounts}]];
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script th:src="@{/js/chart-init.js}"></script>
+</body>
+</html>
