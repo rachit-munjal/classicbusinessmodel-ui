@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Payments')}"><title>Payments</title></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: topnav('payments')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Payments')}"></div>
+
+<div class="page-content">
+
+  <div class="pg-header">
+    <div class="pg-header-icon">💳</div>
+    <div><div class="pg-header-title">Payments</div></div>
+  </div>
+
+  <div class="pg-topbar">
+    <span class="pg-topbar-title">All Payments</span>
+    <div class="pg-topbar-actions">
+      <a href="/" class="btn btn-sm">← Dashboard</a>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-lbl">Total Records</div>
+      <div class="stat-val" th:text="${stats['totalPayments'] ?: payments.totalElements}">273</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-lbl">Total Amount</div>
+      <div class="stat-val stat-val-sm"
+           th:text="${stats['totalAmount'] != null ? '$' + #numbers.formatDecimal(stats['totalAmount'], 0, 'COMMA', 0, 'POINT') : '—'}">$9.6M</div>
+    </div>
+  </div>
+
+  <form method="get" action="/payments" class="search-row">
+    <input type="text" name="search" class="f-input"
+           placeholder="Search by check number…"
+           th:value="${search}" style="max-width:240px"/>
+    <button type="submit" class="btn">Search</button>
+    <a href="/payments" class="btn" th:if="${!search.blank}">Clear</a>
+  </form>
+
+  <div class="page-meta"
+       th:text="${payments.totalElements} + ' payment records (page ' + (payments.number + 1) + ' of ' + payments.totalPages + ')'">
+  </div>
+
+  <div th:if="${payments.content.isEmpty()}" class="empty-state">
+    <div class="empty-icon">💳</div><div>No payments found.</div>
+  </div>
+
+  <div th:unless="${payments.content.isEmpty()}" class="table-wrap">
+    <table class="wf-table">
+      <thead>
+      <tr>
+        <th>Check #</th>
+        <th>Customer #</th>
+        <th>Order #</th>
+        <th>Payment Date</th>
+        <th>Amount</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="p : ${payments.content}">
+        <td th:text="${p.checkNumber}">HQ336336</td>
+        <td th:text="${p.customerNumber}">103</td>
+        <td th:text="${p.orderNumber ?: '—'}">10100</td>
+        <td th:text="${p.paymentDate}">2004-10-19</td>
+        <td th:text="${p.formattedAmount}">$6,066.78</td>
+        <td class="actions-cell">
+          <a th:href="@{/payments/{custNo}/{checkNo}(custNo=${p.customerNumber},checkNo=${p.checkNumber})}"
+             class="btn btn-sm">View</a>
+          <a th:href="@{/payments/{custNo}/{checkNo}(custNo=${p.customerNumber},checkNo=${p.checkNumber})}"
+             class="btn btn-warn btn-sm">Edit</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination" th:if="${payments.totalPages > 1}">
+    <a th:href="@{/payments(page=${payments.previousPage}, search=${search})}"
+       th:class="${payments.first ? 'pag-btn disabled' : 'pag-btn'}">←</a>
+    <a th:each="i : ${payments.pageRange}"
+       th:href="@{/payments(page=${i}, search=${search})}"
+       th:text="${i + 1}"
+       th:class="${i == payments.number ? 'pag-btn on' : 'pag-btn'}">1</a>
+    <a th:href="@{/payments(page=${payments.nextPage}, search=${search})}"
+       th:class="${payments.last ? 'pag-btn disabled' : 'pag-btn'}">→</a>
+  </div>
+
+</div>
+</body>
+</html>
