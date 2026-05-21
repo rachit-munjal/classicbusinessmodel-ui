@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Payment Detail')}"><title>Payment Detail</title></head>
+<body>
+<nav th:replace="~{fragments/layout :: topnav('payments')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Payments / Detail')}"></div>
+
+<div class="page-content" th:data-flash="${flash}" th:data-flash-type="${flashType}">
+    <div class="pg-header">
+        <div class="pg-header-icon">💳</div>
+        <div>
+            <div class="pg-header-title" th:text="'Check #' + ${payment.checkNumber}">Payment</div>
+            <div class="pg-header-sub">Customer # <span th:text="${payment.customerNumber}"></span></div>
+        </div>
+    </div>
+
+    <div class="pg-topbar">
+        <span class="pg-topbar-title" th:text="${payment.formattedAmount}"></span>
+        <div class="pg-topbar-actions">
+            <a href="/payments" class="btn btn-sm">← Back to Payments</a>
+        </div>
+    </div>
+
+    <!-- Detail grid -->
+    <div class="detail-grid">
+        <div class="d-field"><div class="d-lbl">Check #</div><div class="d-val" th:text="${payment.checkNumber}"></div></div>
+        <div class="d-field"><div class="d-lbl">Customer #</div>
+            <div class="d-val">
+                <a th:href="@{/customers/{no}(no=${payment.customerNumber})}"
+                   th:text="${payment.customerNumber}" style="color:var(--accent)"></a>
+            </div>
+        </div>
+        <div class="d-field"><div class="d-lbl">Order #</div>
+            <div class="d-val">
+                <a th:if="${payment.orderNumber != null}"
+                   th:href="@{/orders/{no}(no=${payment.orderNumber})}"
+                   th:text="${payment.orderNumber}" style="color:var(--accent)"></a>
+                <span th:unless="${payment.orderNumber != null}">—</span>
+            </div>
+        </div>
+        <div class="d-field"><div class="d-lbl">Payment Date</div><div class="d-val" th:text="${payment.paymentDate}"></div></div>
+        <div class="d-field"><div class="d-lbl">Amount</div><div class="d-val" th:text="${payment.formattedAmount}"></div></div>
+    </div>
+
+    <!-- Edit Amount -->
+    <div class="quick-strip">
+        <div class="quick-lbl">Update Amount</div>
+        <form th:action="@{/payments/{custNo}/{checkNo}/update(custNo=${payment.customerNumber},checkNo=${payment.checkNumber})}"
+              method="post"
+              style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+            <div class="f-field" style="min-width:200px">
+                <label class="f-lbl">New Amount</label>
+                <input class="f-input" name="amount" type="number" step="0.01" min="0.01"
+                       th:value="${payment.amount}" placeholder="0.00" required/>
+            </div>
+            <button type="submit" class="btn btn-ok">Update Amount</button>
+            <a href="/payments" class="btn">Cancel</a>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>
