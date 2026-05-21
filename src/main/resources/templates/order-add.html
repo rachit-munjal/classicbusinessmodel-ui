@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Create Order')}"><title>Create Order</title></head>
+<body>
+<nav th:replace="~{fragments/layout :: topnav('orders')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Orders / Create')}"></div>
+
+<div class="page-content" th:data-flash="${flash}" th:data-flash-type="${flashType}">
+
+    <div class="pg-header">
+        <div class="pg-header-icon">📦</div>
+        <div>
+            <div class="pg-header-title">Create Order</div>
+<!--            <div class="pg-header-sub">POST /api/v1/orders/create</div>-->
+        </div>
+    </div>
+
+    <a href="/orders" class="back-link">← Back to Orders</a>
+
+    <form method="post" action="/orders/add" id="order-form">
+
+        <!-- ── Order Details ───────────────────────────────────────── -->
+        <div class="slbl">Order Details</div>
+        <div class="card" style="margin-bottom:20px">
+            <div class="wf-form">
+                <div class="f-row2">
+                    <div class="f-field">
+                        <label class="f-lbl">Customer <span class="req">*</span></label>
+                        <select class="f-select" name="customerNumber" required>
+                            <option value="">— Select customer —</option>
+                            <option th:each="c : ${customers}"
+                                    th:value="${c.customerNumber}"
+                                    th:text="${c.customerNumber + ' — ' + c.customerName}">Customer</option>
+                        </select>
+                    </div>
+                    <div class="f-field">
+                        <label class="f-lbl">Status <span class="req">*</span></label>
+                        <select class="f-select" name="status" required>
+                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"
+                                    th:selected="${s == 'In Process'}">In Process</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="f-row2">
+                    <div class="f-field">
+                        <label class="f-lbl">Order Date <span class="req">*</span></label>
+                        <input class="f-input" type="date" name="orderDate" th:value="${today}" required/>
+                    </div>
+                    <div class="f-field">
+                        <label class="f-lbl">Required By <span class="req">*</span></label>
+                        <input class="f-input" type="date" name="requiredDate" required/>
+                    </div>
+                </div>
+                <div class="f-field">
+                    <label class="f-lbl">Comments</label>
+                    <textarea class="f-textarea" name="comments" placeholder="Optional notes…"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Product Picker ──────────────────────────────────────── -->
+        <div class="slbl">Add Products</div>
+
+        <div class="card" style="margin-bottom:20px; padding:14px 16px">
+            <input type="text" id="product-filter" class="f-input"
+                   placeholder="Filter products by name or code…"
+                   style="max-width:320px; margin-bottom:14px"
+                   oninput="filterProducts(this.value)"/>
+
+            <div class="table-wrap" style="max-height:420px; overflow-y:auto; box-shadow:none; border:1px solid var(--border)">
+                <table class="wf-table" id="product-table">
+                    <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Line</th>
+                        <th>Stock</th>
+                        <th>Buy Price</th>
+                        <th style="width:130px">Quantity</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p : ${products}"
+                        th:data-name="${#strings.toLowerCase(p.productName)}"
+                        th:data-code="${#strings.toLowerCase(p.productCode)}">
+                        <td style="font-family:var(--font-mono);font-size:11px" th:text="${p.productCode}">S10_1678</td>
+                        <td th:text="${p.productName}">1969 Harley Davidson</td>
+                        <td th:text="${p.getProductLineName()}">Motorcycles</td>
+                        <td>
+                <span th:text="${p.quantityInStock}"
+                      th:class="${p.quantityInStock < 50} ? 'stock-low' : 'stock-ok'">7933</span>
+                            <!-- hidden price field submitted with the form -->
+                            <input type="hidden"
+                                   th:name="'price_' + ${p.productCode}"
+                                   th:value="${p.buyPrice}"/>
+                        </td>
+                        <td th:text="${p.getFormattedBuyPrice()}">$48.81</td>
+                        <td>
+                            <input type="number"
+                                   th:name="'qty_' + ${p.productCode}"
+                                   min="0"
+                                   th:max="${p.quantityInStock}"
+                                   value="0"
+                                   class="f-input qty-input"
+                                   style="width:90px; height:30px; text-align:center"
+                                   th:data-stock="${p.quantityInStock}"
+                                   th:data-code="${p.productCode}"
+                                   oninput="validateQty(this)"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ── Order Summary ───────────────────────────────────────── -->
+        <div class="card" id="order-summary" style="margin-bottom:20px; display:none">
+            <div class="slbl" style="margin-top:0">Order Summary</div>
+            <div id="summary-lines" style="font-size:12px; color:var(--text); margin-bottom:10px"></div>
+            <div style="font-size:14px; font-weight:700; color:var(--primary)">
+                Total: <span id="summary-total">$0.00</span>
+            </div>
+        </div>
+
+        <!-- ── Actions ─────────────────────────────────────────────── -->
+        <div class="f-actions">
+            <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
+                Create Order
+            </button>
+            <a href="/orders" class="btn">Cancel</a>
+            <span id="validation-msg" style="font-size:11px; color:var(--danger); align-self:center"></span>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    // ── Filter products table by name or code ────────────────────
+    function filterProducts(q) {
+        q = q.toLowerCase().trim();
+        document.querySelectorAll('#product-table tbody tr').forEach(row => {
+            const name = row.dataset.name || '';
+            const code = row.dataset.code || '';
+            row.style.display = (!q || name.includes(q) || code.includes(q)) ? '' : 'none';
+        });
+    }
+
+    // ── Validate qty input: clamp to [0, stock], update summary ──
+    function validateQty(input) {
+        const stock = parseInt(input.dataset.stock) || 0;
+        let val = parseInt(input.value) || 0;
+        if (val < 0) val = 0;
+        if (val > stock) {
+            val = stock;
+            input.value = val;
+            showMsg('Quantity capped to available stock (' + stock + ') for ' + input.dataset.code);
+        } else {
+            clearMsg();
+        }
+        updateSummary();
+    }
+
+    // ── Rebuild the summary box and enable/disable submit ────────
+    function updateSummary() {
+        const inputs  = document.querySelectorAll('.qty-input');
+        let lines     = [];
+        let total     = 0;
+
+        inputs.forEach(input => {
+            const qty = parseInt(input.value) || 0;
+            if (qty > 0) {
+                const row      = input.closest('tr');
+                const code     = input.dataset.code;
+                const name     = row.cells[1].textContent.trim();
+                const priceStr = document.querySelector('input[name="price_' + code + '"]').value;
+                const price    = parseFloat(priceStr) || 0;
+                const lineTotal = qty * price;
+                total += lineTotal;
+                lines.push(qty + ' × ' + name + ' @ $' + price.toFixed(2) + ' = $' + lineTotal.toFixed(2));
+            }
+        });
+
+        const summaryBox  = document.getElementById('order-summary');
+        const summaryLines= document.getElementById('summary-lines');
+        const summaryTotal= document.getElementById('summary-total');
+        const submitBtn   = document.getElementById('submit-btn');
+
+        if (lines.length > 0) {
+            summaryLines.innerHTML = lines.map(l => '<div style="margin-bottom:4px">• ' + l + '</div>').join('');
+            summaryTotal.textContent = '$' + total.toFixed(2);
+            summaryBox.style.display = '';
+            submitBtn.disabled = false;
+        } else {
+            summaryBox.style.display = 'none';
+            submitBtn.disabled = true;
+        }
+    }
+
+    function showMsg(msg) {
+        document.getElementById('validation-msg').textContent = msg;
+    }
+    function clearMsg() {
+        document.getElementById('validation-msg').textContent = '';
+    }
+</script>
+</body>
+</html>
