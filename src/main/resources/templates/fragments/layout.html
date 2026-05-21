@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- ── Reusable <head> fragment ──────────────────────────────── -->
+<head th:fragment="commonHead(pageTitle)">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" th:content="'Classic Model Business Admin — ' + ${pageTitle}"/>
+  <title th:text="${pageTitle} + ' — Classic Models'">Classic Models</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+  <script th:src="@{/js/common.js}" defer></script>
+</head>
+
+<!--
+  ── Top Nav fragment ────────────────────────────────────────────
+  Usage: <nav th:replace="~{fragments/layout :: topnav('dashboard')}"></nav>
+  activePage: dashboard | employees | customers | orders | products | payments | offices
+-->
+<nav th:fragment="topnav(activePage)" class="topnav">
+  <a href="/" class="brand">CMB</a>
+  <a href="/" id="nav-dashboard"
+     th:class="${activePage == 'dashboard'} ? 'nav-btn active' : 'nav-btn'">Dashboard</a>
+  <a href="/employees" id="nav-employees"
+     th:class="${activePage == 'employees'} ? 'nav-btn active' : 'nav-btn'">Employees</a>
+  <a href="/customers" id="nav-customers"
+     th:class="${activePage == 'customers'} ? 'nav-btn active' : 'nav-btn'">Customers</a>
+  <a href="/products" id="nav-products"
+     th:class="${activePage == 'products'} ? 'nav-btn active' : 'nav-btn'">Products</a>
+  <a href="/orders" id="nav-orders"
+     th:class="${activePage == 'orders'} ? 'nav-btn active' : 'nav-btn'">Orders</a>
+  <a href="/payments" id="nav-payments"
+     th:class="${activePage == 'payments'} ? 'nav-btn active' : 'nav-btn'">Payments</a>
+  <a href="/offices" id="nav-offices"
+     th:class="${activePage == 'offices'} ? 'nav-btn active' : 'nav-btn'">Offices</a>
+</nav>
+
+<!--
+  ── Breadcrumb fragment ─────────────────────────────────────────
+  Usage: <div th:replace="~{fragments/layout :: breadcrumb('Page Name')}"></div>
+-->
+<div th:fragment="breadcrumb(pageName)" class="breadcrumb">
+  <a href="/" class="bc-link">Home</a>
+  <span class="bc-sep">›</span>
+  <span class="bc-current" th:text="${pageName}">Page</span>
+</div>
+
+</html>

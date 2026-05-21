@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Edit Employee')}"><title>Edit Employee</title></head>
+<body>
+<nav th:replace="~{fragments/layout :: topnav('employees')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Employees / Edit')}"></div>
+
+<div class="page-content">
+  <div class="pg-header">
+    <div class="pg-header-icon">✏</div>
+    <div>
+      <div class="pg-header-title">Edit Employee</div>
+      <div class="pg-header-sub">PUT /api/v1/employees/update/<span th:text="${emp.employeeNumber}"></span></div>
+    </div>
+    <div class="pg-header-badge">M2</div>
+  </div>
+  <a th:href="@{/employees/{no}(no=${emp.employeeNumber})}" class="back-link">← Back to Detail</a>
+
+  <div class="card">
+    <form th:action="@{/employees/{no}/edit(no=${emp.employeeNumber})}" method="post" class="wf-form">
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Employee # (read-only)</label>
+          <input class="f-input f-readonly" th:value="${emp.employeeNumber}" readonly/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Job Title</label>
+          <input class="f-input" name="jobTitle" th:value="${emp.jobTitle}"/>
+        </div>
+      </div>
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">First Name</label>
+          <input class="f-input" name="firstName" th:value="${emp.firstName}"/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Last Name</label>
+          <input class="f-input" name="lastName" th:value="${emp.lastName}"/>
+        </div>
+      </div>
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Email</label>
+          <input class="f-input" name="email" type="email" th:value="${emp.email}"/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Extension</label>
+          <input class="f-input" name="extension" th:value="${emp.extension}"/>
+        </div>
+      </div>
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Office</label>
+          <select class="f-select" name="officeCode">
+            <option th:each="o : ${offices}" th:value="${o.officeCode}"
+                    th:text="${o.officeCode + ' — ' + o.city}"
+                    th:selected="${o.officeCode == emp.office?.officeCode}"></option>
+          </select>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Reports To</label>
+          <select class="f-select" name="reportsTo">
+            <option value="">— No manager —</option>
+            <option th:each="m : ${managers}"
+                    th:value="${m.employeeNumber}"
+                    th:text="${m.employeeNumber + ' — ' + m.fullName}"
+                    th:selected="${m.employeeNumber == emp.reportsTo?.employeeNumber}"></option>
+          </select>
+        </div>
+      </div>
+      <div class="f-actions">
+        <button type="submit" class="btn btn-dark">Update Employee</button>
+        <a th:href="@{/employees/{no}(no=${emp.employeeNumber})}" class="btn">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

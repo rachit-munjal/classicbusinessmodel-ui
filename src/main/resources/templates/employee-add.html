@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Add Employee')}"><title>Add Employee</title></head>
+<body>
+<nav th:replace="~{fragments/layout :: topnav('employees')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Employees / Add')}"></div>
+
+<div class="page-content" th:data-flash="${flash}" th:data-flash-type="${flashType}">
+  <div class="pg-header">
+    <div class="pg-header-icon">➕</div>
+    <div><div class="pg-header-title">Add Employee</div></div>
+    <div class="pg-header-badge">M2</div>
+  </div>
+  <a href="/employees" class="back-link">← Back to Employee List</a>
+
+  <div class="card">
+    <form method="post" action="/employees/add" class="wf-form">
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Employee # <span class="req">*</span></label>
+          <input class="f-input" name="employeeNumber" type="number" placeholder="e.g. 1999" required/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Job Title <span class="req">*</span></label>
+          <input class="f-input" name="jobTitle" placeholder="e.g. Sales Rep" required/>
+        </div>
+      </div>
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">First Name <span class="req">*</span></label>
+          <input class="f-input" name="firstName" placeholder="First" required/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Last Name <span class="req">*</span></label>
+          <input class="f-input" name="lastName" placeholder="Last" required/>
+        </div>
+      </div>
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Email <span class="req">*</span></label>
+          <input class="f-input" name="email" type="email" placeholder="name@classicmodels.com" required/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Extension</label>
+          <input class="f-input" name="extension" placeholder="x1234"/>
+        </div>
+      </div>
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Office <span class="req">*</span></label>
+          <select class="f-select" name="officeCode" required>
+            <option value="">— Select office —</option>
+            <option th:each="o : ${offices}" th:value="${o.officeCode}"
+                    th:text="${o.officeCode + ' — ' + o.city}"></option>
+          </select>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Reports To (Manager)</label>
+          <select class="f-select" name="reportsTo">
+            <option value="">— No manager —</option>
+            <option th:each="m : ${managers}"
+                    th:value="${m.employeeNumber}"
+                    th:text="${m.employeeNumber + ' — ' + m.fullName}"></option>
+          </select>
+        </div>
+      </div>
+      <div class="f-actions">
+        <button type="submit" class="btn btn-dark">Save Employee</button>
+        <a href="/employees" class="btn">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>
