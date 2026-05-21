@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Order Detail')}"><title>Order Detail</title></head>
+<body>
+<nav th:replace="~{fragments/layout :: topnav('orders')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Orders / Detail')}"></div>
+
+<div class="page-content" th:data-flash="${flash}" th:data-flash-type="${flashType}">
+  <div class="pg-header">
+    <div class="pg-header-icon">📦</div>
+    <div>
+      <div class="pg-header-title">Order #<span th:text="${order.orderNumber}"></span></div>
+<!--      <div class="pg-header-sub">GET /api/v1/orders/<span th:text="${order.orderNumber}"></span></div>-->
+    </div>
+<!--    <div class="pg-header-badge">M5</div>-->
+  </div>
+
+  <div class="pg-topbar">
+    <span class="pg-topbar-title">
+      <span th:text="${order.customerName}">Customer</span>
+      <span th:text="' — ' + (order.status ?: '—')"></span>
+    </span>
+    <div class="pg-topbar-actions">
+      <a href="/orders" class="btn btn-sm">← Back to List</a>
+    </div>
+  </div>
+
+  <!-- Detail grid -->
+  <div class="detail-grid">
+    <div class="d-field"><div class="d-lbl">Order #</div><div class="d-val" th:text="${order.orderNumber}"></div></div>
+    <div class="d-field"><div class="d-lbl">Customer</div><div class="d-val" th:text="${order.customerName}"></div></div>
+    <div class="d-field"><div class="d-lbl">Order Date</div><div class="d-val" th:text="${order.orderDate}"></div></div>
+    <div class="d-field"><div class="d-lbl">Required Date</div><div class="d-val" th:text="${order.requiredDate ?: '—'}"></div></div>
+    <div class="d-field"><div class="d-lbl">Shipped Date</div><div class="d-val" th:text="${order.shippedDate ?: '—'}"></div></div>
+    <div class="d-field">
+      <div class="d-lbl">Status</div>
+      <div class="d-val">
+        <span th:text="${order.status}"
+              th:class="${order.status == 'Shipped'} ? 'badge b-green' :
+                         (${order.status == 'In Process'} ? 'badge b-orange' :
+                         (${order.status == 'Cancelled'} ? 'badge b-red' : 'badge b-gray'))">Status</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Update -->
+  <div class="quick-strip">
+    <div class="quick-lbl">Update Status — PUT /api/v1/orders/<span th:text="${order.orderNumber}"></span>/status/{status}</div>
+    <form th:action="@{/orders/{no}/status(no=${order.orderNumber})}" method="post" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <select class="f-select" name="status" style="width:180px">
+        <option th:each="s : ${statuses}"
+                th:value="${s}"
+                th:text="${s}"
+                th:selected="${s == order.status}"></option>
+      </select>
+      <button type="submit" class="btn btn-ok">Update Status</button>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Add Office')}"><title>Add Office</title></head>
+<body>
+<nav th:replace="~{fragments/layout :: topnav('offices')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Offices / Add')}"></div>
+
+<div class="page-content" th:data-flash="${flash}" th:data-flash-type="${flashType}">
+    <div class="pg-header">
+        <div class="pg-header-icon">🏢</div>
+        <div><div class="pg-header-title">Add Office</div></div>
+    </div>
+    <a href="/offices" class="back-link">← Back to Offices</a>
+
+    <div class="card">
+        <form method="post" action="/offices/add" class="wf-form">
+
+            <div class="f-row2">
+                <div class="f-field">
+                    <label class="f-lbl">Office Code <span class="req">*</span></label>
+                    <input class="f-input" name="officeCode" placeholder="e.g. 8" required/>
+                </div>
+                <div class="f-field">
+                    <label class="f-lbl">Territory <span class="req">*</span></label>
+                    <select class="f-select" name="territory" required>
+                        <option value="">— Select territory —</option>
+                        <option value="NA">NA</option>
+                        <option value="EMEA">EMEA</option>
+                        <option value="APAC">APAC</option>
+                        <option value="Japan">Japan</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="f-row2">
+                <div class="f-field">
+                    <label class="f-lbl">City <span class="req">*</span></label>
+                    <input class="f-input" name="city" placeholder="e.g. Mumbai" required/>
+                </div>
+                <div class="f-field">
+                    <label class="f-lbl">Country <span class="req">*</span></label>
+                    <input class="f-input" name="country" placeholder="e.g. India" required/>
+                </div>
+            </div>
+
+            <div class="f-row2">
+                <div class="f-field">
+                    <label class="f-lbl">Phone <span class="req">*</span></label>
+                    <input class="f-input" name="phone" placeholder="+91 22 1234 5678" required/>
+                </div>
+                <div class="f-field">
+                    <label class="f-lbl">Postal Code <span class="req">*</span></label>
+                    <input class="f-input" name="postalCode" placeholder="e.g. 400001" required/>
+                </div>
+            </div>
+
+            <div class="f-field">
+                <label class="f-lbl">Address Line 1 <span class="req">*</span></label>
+                <input class="f-input" name="addressLine1" placeholder="Street address" required/>
+            </div>
+
+            <div class="f-row2">
+                <div class="f-field">
+                    <label class="f-lbl">Address Line 2</label>
+                    <input class="f-input" name="addressLine2" placeholder="Suite, floor, etc."/>
+                </div>
+                <div class="f-field">
+                    <label class="f-lbl">State</label>
+                    <input class="f-input" name="state" placeholder="e.g. Maharashtra"/>
+                </div>
+            </div>
+
+            <div class="f-actions">
+                <button type="submit" class="btn btn-dark">Save Office</button>
+                <a href="/offices" class="btn">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+</body>
+</html>
