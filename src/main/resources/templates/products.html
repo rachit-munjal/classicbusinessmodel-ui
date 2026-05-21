@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Products')}"><title>Products</title></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: topnav('products')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Products')}"></div>
+
+<div class="page-content">
+
+  <div class="pg-header">
+    <div class="pg-header-icon">🏷️</div>
+    <div><div class="pg-header-title">Products</div></div>
+<!--    <div class="pg-header-badge">M5</div>-->
+  </div>
+
+  <div class="pg-topbar">
+    <span class="pg-topbar-title" th:text="${selectedLine.blank and search.blank} ? 'Product Lines' : ('Products — ' + (selectedLine.blank ? 'Search: ' + search : selectedLine))">Product Lines</span>
+    <div class="pg-topbar-actions">
+      <a href="/" class="btn btn-sm">← Dashboard</a>
+      <a th:if="${!selectedLine.blank or !search.blank}" href="/products" class="btn btn-sm">← All Lines</a>
+      <a href="/products/add" class="btn btn-dark">+ Add Product</a>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-lbl">Total Products</div>
+      <div class="stat-val" th:text="${stats['totalProducts'] ?: 0}">110</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-lbl">Product Lines</div>
+      <div class="stat-val" th:text="${stats['totalProductLines'] ?: 0}">7</div>
+    </div>
+  </div>
+
+  <!-- ── PRODUCT LINE CARDS (shown when no line/search selected) ── -->
+  <div th:if="${selectedLine.blank and search.blank}">
+    <div class="slbl" style="margin-top:16px">Browse by Product Line</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:10px">
+      <a th:each="pl : ${productLines}"
+         th:href="@{/products(line=${pl})}"
+         style="text-decoration:none">
+        <div class="card" style="padding:18px 20px;cursor:pointer;transition:box-shadow .15s"
+             onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,.12)'"
+             onmouseout="this.style.boxShadow=''">
+          <div style="font-size:1.6rem;margin-bottom:8px">🚗</div>
+          <div style="font-weight:600;font-size:.85rem;margin-bottom:4px" th:text="${pl}">Motorcycles</div>
+          <div style="font-size:.75rem;color:#888"
+               th:text="${stats['productCountPerLine'] != null and stats['productCountPerLine'][pl] != null ? stats['productCountPerLine'][pl] + ' products' : 'View products'}">
+            View products
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Quick search bar -->
+    <div class="slbl" style="margin-top:24px">Or search all products</div>
+    <form method="get" action="/products" class="search-row" style="margin-top:8px">
+      <input id="product-search" type="text" name="search"
+             class="f-input" placeholder="Search product name…"
+             style="max-width:280px"/>
+      <button type="submit" class="btn">Search</button>
+    </form>
+  </div>
+
+  <!-- ── PRODUCT TABLE (shown when a line or search is active) ── -->
+  <div th:unless="${selectedLine.blank and search.blank}">
+
+    <!-- Filter bar for switching line / searching -->
+    <form method="get" action="/products" class="search-row" style="margin-top:16px">
+      <input id="product-search-active" type="text" name="search"
+             class="f-input" placeholder="Search product name…"
+             th:value="${search}" style="max-width:220px"/>
+      <select id="product-line-filter" name="line" class="f-select" style="min-width:180px">
+        <option value="" th:selected="${selectedLine == ''}">All Lines</option>
+        <option th:each="pl : ${productLines}"
+                th:value="${pl}"
+                th:text="${pl}"
+                th:selected="${pl == selectedLine}">Line</option>
+      </select>
+      <button type="submit" class="btn">Filter</button>
+    </form>
+
+    <div class="page-meta"
+         th:text="'Showing ' + ${products.content.size()} + ' of ' + ${products.totalElements} + ' products'"></div>
+
+    <div th:if="${products.content.isEmpty()}" class="empty-state">
+      <div class="empty-icon">🚗</div><div>No products found.</div>
+    </div>
+
+    <div th:unless="${products.content.isEmpty()}" class="table-wrap">
+      <table id="products-table" class="wf-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Product Name</th>
+            <th>Line</th>
+            <th>In Stock</th>
+            <th>Buy Price</th>
+            <th>MSRP</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="p : ${products.content}">
+            <td th:text="${p.productCode}">S10_1678</td>
+            <td th:text="${p.productName}">1969 Harley Davidson</td>
+            <td th:text="${p.productLineName}">Motorcycles</td>
+            <td>
+              <span th:text="${p.quantityInStock}"
+                    th:class="${p.quantityInStock != null and p.quantityInStock < 100 ? 'stock-low' : 'stock-ok'}">7933</span>
+            </td>
+            <td th:text="${p.formattedBuyPrice}">$48.81</td>
+            <td th:text="${p.formattedMsrp}">$95.70</td>
+            <td class="actions-cell">
+              <a th:href="@{/products/{code}(code=${p.productCode})}" class="btn btn-sm">View</a>
+              <a th:href="@{/products/{code}/edit(code=${p.productCode})}" class="btn btn-warn btn-sm">Edit</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination" th:if="${products.totalPages > 1}">
+      <a th:href="@{/products(page=${products.previousPage}, search=${search}, line=${selectedLine})}"
+         th:class="${products.first ? 'pag-btn disabled' : 'pag-btn'}">←</a>
+      <a th:each="i : ${products.pageRange}"
+         th:href="@{/products(page=${i}, search=${search}, line=${selectedLine})}"
+         th:text="${i + 1}"
+         th:class="${i == products.number ? 'pag-btn on' : 'pag-btn'}">1</a>
+      <a th:href="@{/products(page=${products.nextPage}, search=${search}, line=${selectedLine})}"
+         th:class="${products.last ? 'pag-btn disabled' : 'pag-btn'}">→</a>
+    </div>
+
+  </div><!-- end product table section -->
+
+</div>
+</body>
+</html>
