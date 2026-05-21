@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Customers')}"><title>Customers</title></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: topnav('customers')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Customers')}"></div>
+
+<div class="page-content" th:data-flash="${flash}" th:data-flash-type="${flashType}">
+
+  <div class="pg-header">
+<!--    <div class="pg-header-icon">🤝</div>-->
+    <div><div class="pg-header-title">Customers</div></div>
+<!--    <div class="pg-header-badge">M3</div>-->
+  </div>
+
+<!--  <div class="ep-strip">-->
+<!--    <span class="ep ep-get">GET /api/v1/customers/search</span>-->
+<!--    <span class="ep ep-get">GET /api/v1/customers/filter/country</span>-->
+<!--    <span class="ep ep-get">GET /api/v1/customers/stats</span>-->
+<!--    <span class="ep ep-post">POST /api/v1/customers/add</span>-->
+<!--    <span class="ep ep-put">PUT /api/v1/customers/update/{no}</span>-->
+<!--  </div>-->
+
+  <div class="pg-topbar">
+    <span class="pg-topbar-title">All Customers</span>
+    <div class="pg-topbar-actions">
+      <a href="/" class="btn btn-sm">← Dashboard</a>
+      <a href="/customers/add" class="btn btn-dark">+ Add Customer</a>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-lbl">Total</div>
+      <div class="stat-val" th:text="${stats['totalCustomers'] ?: customers.totalElements}">122</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-lbl">Countries</div>
+      <div class="stat-val" th:text="${stats['totalCountries'] ?: 0}">27</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-lbl">Avg Credit</div>
+      <div class="stat-val stat-val-sm"
+           th:text="${stats['avgCreditLimit'] != null ? '$' + #numbers.formatDecimal(stats['avgCreditLimit'], 0, 'COMMA', 0, 'POINT') : '—'}">—</div>
+    </div>
+  </div>
+
+  <form method="get" action="/customers" class="search-row">
+    <input id="customer-search" type="text" name="search"
+           class="f-input" placeholder="Search company name…"
+           th:value="${search}" style="max-width:240px"/>
+    <input id="customer-country" type="text" name="country"
+           class="f-input" placeholder="Filter by country…"
+           th:value="${selectedCountry}" style="max-width:160px"/>
+    <button type="submit" class="btn">Search</button>
+    <a href="/customers" class="btn"
+       th:if="${!search.blank || !selectedCountry.blank}">Clear</a>
+  </form>
+
+  <div class="page-meta"
+       th:text="'Showing ' + ${customers.content.size()} + ' of ' + ${customers.totalElements} + ' customers'"></div>
+
+  <div th:if="${customers.content.isEmpty()}" class="empty-state">
+    <div class="empty-icon">🤝</div>
+    <div>No customers found.</div>
+  </div>
+
+  <div th:unless="${customers.content.isEmpty()}" class="table-wrap">
+    <table id="customers-table" class="wf-table">
+      <thead>
+        <tr>
+          <th>Cust #</th>
+          <th>Company</th>
+          <th>Contact</th>
+          <th>City</th>
+          <th>Country</th>
+          <th>Credit Limit</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="c : ${customers.content}">
+          <td th:text="${c.customerNumber}">103</td>
+          <td th:text="${c.customerName}">Atelier Graphique</td>
+          <td th:text="${c.contactFullName}">Carine Schmitt</td>
+          <td th:text="${c.city}">Nantes</td>
+          <td th:text="${c.country}">France</td>
+          <td th:text="${c.formattedCreditLimit}">$21,000</td>
+          <td class="actions-cell">
+            <a th:href="@{/customers/{no}(no=${c.customerNumber})}" class="btn btn-sm">View</a>
+            <a th:href="@{/customers/{no}/edit(no=${c.customerNumber})}" class="btn btn-warn btn-sm">Edit</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination" th:if="${customers.totalPages > 1}">
+    <a th:href="@{/customers(page=${customers.previousPage}, search=${search}, country=${selectedCountry})}"
+       th:class="${customers.first ? 'pag-btn disabled' : 'pag-btn'}">←</a>
+    <a th:each="i : ${customers.pageRange}"
+       th:href="@{/customers(page=${i}, search=${search}, country=${selectedCountry})}"
+       th:text="${i + 1}"
+       th:class="${i == customers.number ? 'pag-btn on' : 'pag-btn'}">1</a>
+    <a th:href="@{/customers(page=${customers.nextPage}, search=${search}, country=${selectedCountry})}"
+       th:class="${customers.last ? 'pag-btn disabled' : 'pag-btn'}">→</a>
+  </div>
+
+</div>
+</body>
+</html>

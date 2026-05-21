@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Customer Detail')}"><title>Customer Detail</title></head>
+<body>
+<nav th:replace="~{fragments/layout :: topnav('customers')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Customers / Detail')}"></div>
+
+<div class="page-content" th:data-flash="${flash}" th:data-flash-type="${flashType}">
+  <div class="pg-header">
+    <div class="pg-header-icon">👤</div>
+    <div>
+      <div class="pg-header-title" th:text="${cust.customerName}">Customer</div>
+      <div class="pg-header-sub"># <span th:text="${cust.customerNumber}"></span></div>
+    </div>
+    <div class="pg-header-badge">M3</div>
+  </div>
+
+  <div class="pg-topbar">
+    <span class="pg-topbar-title" th:text="${cust.contactFullName + ' — ' + cust.city + ', ' + cust.country}"></span>
+    <div class="pg-topbar-actions">
+      <a href="/customers" class="btn btn-sm">← Back to List</a>
+      <a th:href="@{/customers/{no}/edit(no=${cust.customerNumber})}" class="btn btn-warn">✏ Edit</a>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab-item on" onclick="switchTab('ctab','info',this)">Info</div>
+    <div class="tab-item"    onclick="switchTab('ctab','orders',this)">Orders</div>
+    <div class="tab-item"    onclick="switchTab('ctab','payments',this)">Payments</div>
+  </div>
+
+  <!-- Info -->
+  <div class="tab-panel on" id="ctab-info">
+    <div class="detail-grid">
+      <div class="d-field"><div class="d-lbl">Customer #</div><div class="d-val" th:text="${cust.customerNumber}"></div></div>
+      <div class="d-field"><div class="d-lbl">Customer Name</div><div class="d-val" th:text="${cust.customerName}"></div></div>
+      <div class="d-field"><div class="d-lbl">Contact First</div><div class="d-val" th:text="${cust.contactFirstName}"></div></div>
+      <div class="d-field"><div class="d-lbl">Contact Last</div><div class="d-val" th:text="${cust.contactLastName}"></div></div>
+      <div class="d-field"><div class="d-lbl">Phone</div><div class="d-val" th:text="${cust.phone}"></div></div>
+      <div class="d-field"><div class="d-lbl">Address</div><div class="d-val" th:text="${cust.addressLine1}"></div></div>
+      <div class="d-field"><div class="d-lbl">City</div><div class="d-val" th:text="${cust.city}"></div></div>
+      <div class="d-field"><div class="d-lbl">State</div><div class="d-val" th:text="${cust.state ?: '—'}"></div></div>
+      <div class="d-field"><div class="d-lbl">Country</div><div class="d-val" th:text="${cust.country}"></div></div>
+      <div class="d-field"><div class="d-lbl">Credit Limit</div><div class="d-val" th:text="${cust.formattedCreditLimit}"></div></div>
+    </div>
+  </div>
+
+  <!-- Orders -->
+  <div class="tab-panel" id="ctab-orders">
+    <div class="table-wrap">
+      <table class="wf-table">
+        <thead><tr><th>Order #</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr th:if="${orders == null or orders.isEmpty()}">
+            <td colspan="4" style="text-align:center;padding:16px;color:#888">No orders found.</td>
+          </tr>
+          <tr th:each="o : ${orders}">
+            <td th:text="${o.orderNumber}"></td>
+            <td th:text="${o.orderDate}"></td>
+            <td>
+              <span th:text="${o.status}"
+                    th:class="${o.status == 'Shipped'} ? 'badge b-green' :
+                               (${o.status == 'In Process'} ? 'badge b-orange' :
+                               (${o.status == 'Cancelled'} ? 'badge b-red' : 'badge b-gray'))">Shipped</span>
+            </td>
+            <td><a th:href="@{/orders/{no}(no=${o.orderNumber})}" class="btn btn-sm">View</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Payments -->
+  <div class="tab-panel" id="ctab-payments">
+    <div class="table-wrap">
+      <table class="wf-table">
+        <thead><tr><th>Check #</th><th>Date</th><th>Amount</th></tr></thead>
+        <tbody>
+          <tr th:if="${payments == null or payments.isEmpty()}">
+            <td colspan="3" style="text-align:center;padding:16px;color:#888">No payments found.</td>
+          </tr>
+          <tr th:each="p : ${payments}">
+            <td th:text="${p.checkNumber}"></td>
+            <td th:text="${p.paymentDate}"></td>
+            <td th:text="${p.formattedAmount}"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
