@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Product Detail')}"><title>Product Detail</title></head>
+<body>
+<nav th:replace="~{fragments/layout :: topnav('products')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Products / Detail')}"></div>
+
+<div class="page-content" th:data-flash="${flash}" th:data-flash-type="${flashType}">
+  <div class="pg-header">
+    <div class="pg-header-icon">🛒</div>
+    <div>
+      <div class="pg-header-title" th:text="${prod.productName}">Product</div>
+      <div class="pg-header-sub" th:text="${prod.productCode}"></div>
+    </div>
+<!--    <div class="pg-header-badge">M4</div>-->
+  </div>
+
+  <div class="pg-topbar">
+    <span class="pg-topbar-title" th:text="${prod.productLineName + ' · ' + prod.productScale}"></span>
+    <div class="pg-topbar-actions">
+      <a href="/products" class="btn btn-sm">← Back to List</a>
+    </div>
+  </div>
+
+  <!-- Detail grid -->
+  <div class="detail-grid">
+    <div class="d-field"><div class="d-lbl">Product Code</div><div class="d-val" th:text="${prod.productCode}"></div></div>
+    <div class="d-field"><div class="d-lbl">Product Name</div><div class="d-val" th:text="${prod.productName}"></div></div>
+    <div class="d-field"><div class="d-lbl">Product Line</div><div class="d-val" th:text="${prod.productLineName}"></div></div>
+    <div class="d-field"><div class="d-lbl">Scale</div><div class="d-val" th:text="${prod.productScale}"></div></div>
+    <div class="d-field"><div class="d-lbl">Vendor</div><div class="d-val" th:text="${prod.productVendor}"></div></div>
+    <div class="d-field"><div class="d-lbl">Qty In Stock</div><div class="d-val" th:text="${prod.quantityInStock}"></div></div>
+    <div class="d-field"><div class="d-lbl">Buy Price</div><div class="d-val" th:text="${prod.formattedBuyPrice}"></div></div>
+    <div class="d-field"><div class="d-lbl">MSRP</div><div class="d-val" th:text="${prod.formattedMsrp}"></div></div>
+  </div>
+
+  <!-- Description -->
+  <div class="slbl">Description</div>
+  <div style="font-size:11px;color:#444;line-height:1.6;padding:10px 14px;border:1px solid var(--border);background:var(--card-bg);margin-bottom:14px"
+       th:text="${prod.productDescription}"></div>
+
+  <!-- Quick Update -->
+  <div class="quick-strip">
+    <div class="quick-lbl">Quick Update — PUT endpoints</div>
+    <form th:action="@{/products/{code}/update(code=${prod.productCode})}" method="post">
+      <div class="f-row3">
+        <div class="f-field">
+          <label class="f-lbl">New Buy Price</label>
+          <input class="f-input" name="buyPrice" type="number" step="0.01" th:value="${prod.buyPrice}"/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">New Stock Qty</label>
+          <input class="f-input" name="qty" type="number" th:value="${prod.quantityInStock}"/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">New MSRP</label>
+          <input class="f-input" name="msrp" type="number" step="0.01" th:value="${prod.msrp}"/>
+        </div>
+      </div>
+      <div style="margin-top:10px">
+        <button type="submit" class="btn btn-ok">Apply Updates</button>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

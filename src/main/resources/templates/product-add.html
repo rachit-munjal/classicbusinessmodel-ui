@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Add Product')}"><title>Add Product</title></head>
+<body>
+<nav th:replace="~{fragments/layout :: topnav('products')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Products / Add')}"></div>
+
+<div class="page-content" th:data-flash="${flash}" th:data-flash-type="${flashType}">
+  <div class="pg-header">
+    <div class="pg-header-icon">➕</div>
+    <div class="pg-header-title">Add Product</div>
+<!--      <div class="pg-header-sub">POST /api/v1/products/add</div>-->
+<!--    <div class="pg-header-badge">M4</div>-->
+  </div>
+  <a href="/products" class="back-link">← Back to Product List</a>
+
+  <div class="card">
+    <form method="post" action="/products/add" class="wf-form">
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Product Code <span class="req">*</span></label>
+          <input class="f-input" name="productCode" placeholder="e.g. S10_9999" required/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Product Name <span class="req">*</span></label>
+          <input class="f-input" name="productName" placeholder="Full product name" required/>
+        </div>
+      </div>
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Product Line <span class="req">*</span></label>
+          <select class="f-select" name="productLineName" required>
+            <option value="">— Select —</option>
+            <option th:each="pl : ${productLines}" th:value="${pl}" th:text="${pl}"></option>
+          </select>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Scale <span class="req">*</span></label>
+          <input class="f-input" name="productScale" placeholder="e.g. 1:10" required/>
+        </div>
+      </div>
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Vendor <span class="req">*</span></label>
+          <input class="f-input" name="productVendor" placeholder="Vendor name" required/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">Qty In Stock <span class="req">*</span></label>
+          <input class="f-input" name="quantityInStock" type="number" value="0" required/>
+        </div>
+      </div>
+      <div class="f-row2">
+        <div class="f-field">
+          <label class="f-lbl">Buy Price <span class="req">*</span></label>
+          <input class="f-input" name="buyPrice" type="number" step="0.01" placeholder="0.00" required/>
+        </div>
+        <div class="f-field">
+          <label class="f-lbl">MSRP <span class="req">*</span></label>
+          <input class="f-input" name="msrp" type="number" step="0.01" placeholder="0.00" required/>
+        </div>
+      </div>
+      <div class="f-field">
+        <label class="f-lbl">Description</label>
+        <textarea class="f-textarea" name="productDescription" placeholder="Product description…"></textarea>
+      </div>
+      <div class="f-actions">
+        <button type="submit" class="btn btn-dark">Add Product</button>
+        <a href="/products" class="btn">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>
