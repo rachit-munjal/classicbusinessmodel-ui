@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: commonHead('Orders')}"><title>Orders</title></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: topnav('orders')}"></nav>
+<div th:replace="~{fragments/layout :: breadcrumb('Orders')}"></div>
+
+<div class="page-content">
+
+  <div class="pg-header">
+    <div class="pg-header-icon">📦</div>
+    <div><div class="pg-header-title">Orders</div></div>
+<!--    <div class="pg-header-badge">M4 — Ankit Goel</div>-->
+  </div>
+
+<!--  <div class="ep-strip">-->
+<!--    <span class="ep ep-get">GET /api/v1/orders/search</span>-->
+<!--    <span class="ep ep-get">GET /api/v1/orders/filter/status</span>-->
+<!--    <span class="ep ep-get">GET /api/v1/orders/stats</span>-->
+<!--    <span class="ep ep-put">PUT /api/v1/orders/{no}/status/{status}</span>-->
+<!--    <span class="ep ep-post">POST /api/v1/orders/create</span>-->
+<!--  </div>-->
+
+  <div class="pg-topbar">
+    <span class="pg-topbar-title">All Orders</span>
+    <div class="pg-topbar-actions">
+      <a href="/orders/add" class="btn btn-primary btn-sm">+ Create Order</a>
+      <a href="/" class="btn btn-sm">← Dashboard</a>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-lbl">Total</div>
+      <div class="stat-val" th:text="${stats['totalOrders'] ?: 0}">326</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-lbl">Shipped</div>
+      <div class="stat-val" th:text="${stats['totalShipped'] ?: 0}">303</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-lbl">In Process</div>
+      <div class="stat-val" th:text="${stats['totalInProcess'] ?: 0}">7</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-lbl">Cancelled</div>
+      <div class="stat-val" th:text="${stats['totalCancelled'] ?: 0}">6</div>
+    </div>
+  </div>
+
+  <!-- Status tabs -->
+  <div class="tab-bar">
+    <a href="/orders" th:class="${selectedStatus.blank ? 'tab-item on' : 'tab-item'}">All</a>
+    <a th:each="s : ${statuses}"
+       th:href="@{/orders(status=${s})}"
+       th:text="${s}"
+       th:class="${s == selectedStatus ? 'tab-item on' : 'tab-item'}">Shipped</a>
+  </div>
+
+  <!-- Search (all-orders mode only) -->
+  <form method="get" action="/orders" class="search-row" th:if="${selectedStatus.blank}">
+    <input id="order-search" type="text" name="search"
+           class="f-input" placeholder="Search by customer name…"
+           th:value="${search}" style="max-width:240px"/>
+    <button type="submit" class="btn">Search</button>
+    <a href="/orders" class="btn" th:if="${!search.blank}">Clear</a>
+  </form>
+
+  <div class="page-meta" th:if="${ordersPage != null}"
+       th:text="'Showing ' + ${ordersPage.content.size()} + ' of ' + ${ordersPage.totalElements} + ' orders'"></div>
+  <div class="page-meta" th:if="${ordersList != null}"
+       th:text="${ordersList.size()} + ' orders  ·  status: ' + ${selectedStatus}"></div>
+
+  <!-- Paginated (search mode) -->
+  <th:block th:if="${ordersPage != null}">
+    <div th:if="${ordersPage.content.isEmpty()}" class="empty-state">
+      <div class="empty-icon">📦</div><div>No orders found.</div>
+    </div>
+    <div th:unless="${ordersPage.content.isEmpty()}" class="table-wrap">
+      <table id="orders-table" class="wf-table">
+        <thead>
+        <tr>
+          <th>Order #</th><th>Customer</th><th>Order Date</th>
+          <th>Required</th><th>Shipped</th><th>Status</th><th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="o : ${ordersPage.content}">
+          <td th:text="${o.orderNumber}">10100</td>
+          <td th:text="${o.customerName}">Customer</td>
+          <td th:text="${o.orderDate}">2003-01-06</td>
+          <td th:text="${o.requiredDate}">2003-01-13</td>
+          <td th:text="${o.shippedDate ?: '—'}">—</td>
+          <td>
+              <span th:text="${o.status}"
+                    th:class="${o.status == 'Shipped'}     ? 'badge b-green'  :
+                               (${o.status == 'In Process'} ? 'badge b-orange' :
+                               (${o.status == 'Cancelled'}  ? 'badge b-red'    :
+                               (${o.status == 'On Hold'}    ? 'badge b-blue'   : 'badge b-gray')))">
+                Shipped
+              </span>
+          </td>
+          <td><a th:href="@{/orders/{no}(no=${o.orderNumber})}" class="btn btn-sm">View</a></td>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination" th:if="${ordersPage.totalPages > 1}">
+      <a th:href="@{/orders(page=${ordersPage.previousPage}, search=${search})}"
+         th:class="${ordersPage.first ? 'pag-btn disabled' : 'pag-btn'}">←</a>
+      <a th:each="i : ${ordersPage.pageRange}"
+         th:href="@{/orders(page=${i}, search=${search})}"
+         th:text="${i + 1}"
+         th:class="${i == ordersPage.number ? 'pag-btn on' : 'pag-btn'}">1</a>
+      <a th:href="@{/orders(page=${ordersPage.nextPage}, search=${search})}"
+         th:class="${ordersPage.last ? 'pag-btn disabled' : 'pag-btn'}">→</a>
+    </div>
+  </th:block>
+
+  <!-- Status-filtered list -->
+  <th:block th:if="${ordersList != null}">
+    <div th:if="${ordersList.isEmpty()}" class="empty-state">
+      <div class="empty-icon">📦</div><div th:text="'No orders with status: ' + ${selectedStatus}">No orders.</div>
+    </div>
+    <div th:unless="${ordersList.isEmpty()}" class="table-wrap">
+      <table class="wf-table">
+        <thead>
+        <tr>
+          <th>Order #</th><th>Customer</th><th>Order Date</th>
+          <th>Required</th><th>Shipped</th><th>Status</th><th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="o : ${ordersList}">
+          <td th:text="${o.orderNumber}">10100</td>
+          <td th:text="${o.customerName}">Customer</td>
+          <td th:text="${o.orderDate}">2003-01-06</td>
+          <td th:text="${o.requiredDate}">2003-01-13</td>
+          <td th:text="${o.shippedDate ?: '—'}">—</td>
+          <td>
+              <span th:text="${o.status}"
+                    th:class="${o.status == 'Shipped'}     ? 'badge b-green'  :
+                               (${o.status == 'In Process'} ? 'badge b-orange' :
+                               (${o.status == 'Cancelled'}  ? 'badge b-red'    :
+                               (${o.status == 'On Hold'}    ? 'badge b-blue'   : 'badge b-gray')))">
+                Shipped
+              </span>
+          </td>
+          <td><a th:href="@{/orders/{no}(no=${o.orderNumber})}" class="btn btn-sm">View</a></td>
+        </tbody>
+      </table>
+    </div>
+  </th:block>
+
+</div>
+</body>
+</html>
